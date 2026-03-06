@@ -15,42 +15,19 @@ local function open_entries(tag)
     return
   end
 
-  -- Formato: "archivo.js:10  // comentario con #tag"
+  -- Formato compatible con grep de fzf-lua: "archivo:linea:texto"
   local items = {}
   for _, e in ipairs(entries) do
-    table.insert(items, string.format(
-      "%-40s  \27[90m%s\27[0m",
-      e.file .. ":" .. e.lnum,
-      vim.trim(e.text)
-    ))
+    table.insert(items, string.format("%s:%d:%s", e.file, e.lnum, vim.trim(e.text)))
   end
 
   fzf.fzf_exec(items, {
     prompt = "  " .. tag .. " > ",
-    preview = function(selected)
-      local line = selected[1] or ""
-      local file_lnum = line:match("^(%S+)")
-      if not file_lnum then return {} end
-      local file, lnum = file_lnum:match("^(.+):(%d+)$")
-      if file and lnum then
-        -- bat preview si está disponible, si no cat
-        if vim.fn.executable("bat") == 1 then
-          return string.format(
-            "bat --style=numbers --color=always --highlight-line %s '%s'",
-            lnum, file
-          )
-        else
-          return string.format("sed -n '%s,%sp' '%s'", lnum, tonumber(lnum) + 10, file)
-        end
-      end
-    end,
-    preview_type = "cmd",
+    previewer = "builtin",
     actions = {
       ["default"] = function(selected)
         local line = selected[1] or ""
-        local file_lnum = line:match("^(%S+)")
-        if not file_lnum then return end
-        local file, lnum = file_lnum:match("^(.+):(%d+)$")
+        local file, lnum = line:match("^([^:]+):(%d+):")
         if file and lnum then
           vim.cmd("edit " .. vim.fn.fnameescape(file))
           vim.api.nvim_win_set_cursor(0, { tonumber(lnum), 0 })

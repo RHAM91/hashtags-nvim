@@ -2,7 +2,7 @@
 
 Sistema de etiquetas libre en comentarios de código para Neovim.
 
-Escribe `#tags` en tus comentarios y navega por ellos desde un panel lateral o un buscador fzf-lua.
+Escribe `#tags` en tus comentarios y navega por ellos desde un panel lateral o un buscador fzf-lua con preview integrado.
 
 ```js
 export function fetchUser(id) { // #api #critico
@@ -14,18 +14,29 @@ console.log("iniciando app") // #debug #mensaje
 
 ---
 
-## Requisitos
+## ✨ Características
+
+- 🔍 Búsqueda rápida de hashtags con **fzf-lua**
+- 📁 Panel lateral tipo árbol para explorar tags
+- 🎨 Preview con syntax highlighting (usando **bat**)
+- 🚀 Caché inteligente para mejor rendimiento
+- 🌐 Soporte multi-lenguaje automático
+- ⚙️ Altamente configurable
+
+---
+
+## 📋 Requisitos
 
 - Neovim >= 0.9
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua)
 - [ripgrep](https://github.com/BurntSushi/ripgrep) (`rg` en PATH)
-- (opcional) [bat](https://github.com/sharkdp/bat) para preview con colores
+- [bat](https://github.com/sharkdp/bat) (opcional, para preview con colores)
 
 ---
 
-## Instalación
+## 📦 Instalación
 
-### lazy.nvim
+### lazy.nvim (recomendado)
 
 ```lua
 {
@@ -34,6 +45,11 @@ console.log("iniciando app") // #debug #mensaje
   config = function()
     require("hashtags").setup()
   end,
+  keys = {
+    { "<leader>ht", "<cmd>HashtagsFind<CR>", desc = "Buscar hashtag" },
+    { "<leader>hT", "<cmd>HashtagsTree<CR>", desc = "Panel hashtags" },
+    { "<leader>hr", "<cmd>HashtagsRefresh<CR>", desc = "Refresh hashtags" },
+  },
 }
 ```
 
@@ -49,18 +65,33 @@ use {
 }
 ```
 
+Después de agregar el plugin, ejecuta:
+```vim
+:Lazy sync  " para lazy.nvim
+:PackerSync " para packer.nvim
+```
+
 ---
 
-## Configuración
+## ⚙️ Configuración
+
+### Configuración básica
+
+```lua
+require("hashtags").setup()
+```
+
+### Configuración completa (con valores por defecto)
 
 ```lua
 require("hashtags").setup({
   -- Símbolo de tag (default: "#")
+  -- Puedes cambiarlo a "@", "!", etc.
   tag_symbol = "#",
 
   -- Highlight de tags en el buffer actual
   highlight = true,
-  highlight_group = "HashTag", -- puedes linkear a otro grupo
+  highlight_group = "HashTag", -- puedes linkear a otro grupo de color
 
   -- Directorios a ignorar en el escaneo
   exclude = { ".git", "node_modules", ".venv", "dist", "build" },
@@ -71,8 +102,40 @@ require("hashtags").setup({
     lua        = { "--%s*(.*)" },
     python     = { "#%s*(.*)" },
     javascript = { "//%s*(.*)" },
-    -- ...
+    typescript = { "//%s*(.*)" },
+    rust       = { "//%s*(.*)" },
+    go         = { "//%s*(.*)" },
+    -- Agrega más según necesites
   },
+})
+```
+
+### Ejemplos de personalización
+
+#### Cambiar el símbolo de tag
+
+```lua
+require("hashtags").setup({
+  tag_symbol = "@",  -- Ahora usa @tag en lugar de #tag
+})
+```
+
+#### Personalizar colores del highlight
+
+```lua
+require("hashtags").setup({
+  highlight_group = "Comment",  -- Usa el color de comentarios
+})
+
+-- O crea tu propio grupo de color
+vim.api.nvim_set_hl(0, "HashTag", { fg = "#ff79c6", bold = true })
+```
+
+#### Agregar más directorios a ignorar
+
+```lua
+require("hashtags").setup({
+  exclude = { ".git", "node_modules", ".venv", "dist", "build", "target", "vendor" },
 })
 ```
 
