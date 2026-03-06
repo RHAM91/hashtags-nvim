@@ -139,6 +139,35 @@ require("hashtags").setup({
 })
 ```
 
+## Auto-refresh
+
+Por defecto, el plugin refresca automáticamente la lista de tags cada vez que guardas un archivo. Esto significa que si agregas un nuevo `##tag` en cualquier archivo y guardas, el panel lateral y el buscador ya tendrán el tag disponible sin necesidad de ejecutar `:HashtagsRefresh` manualmente.
+
+Este comportamiento es configurable mediante dos opciones:
+
+| Opción | Tipo | Default | Descripción |
+|--------|------|---------|-------------|
+| `auto_refresh` | boolean | `true` | Activa o desactiva el refresh automático al guardar |
+| `auto_refresh_delay` | number | `100` | Tiempo en ms antes de refrescar tras guardar |
+
+### Desactivar el auto-refresh
+
+Si trabajas en proyectos muy grandes y notas lentitud al guardar, puedes desactivarlo:
+```lua
+require("hashtags").setup({
+  auto_refresh = false,
+})
+```
+
+### Ajustar el delay
+
+El delay de 100ms está pensado para que el refresco no bloquee el guardado. Si tienes un proyecto grande puedes aumentarlo:
+```lua
+require("hashtags").setup({
+  auto_refresh_delay = 300, -- ms
+})
+```
+
 ---
 
 ## Uso
