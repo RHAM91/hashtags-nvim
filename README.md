@@ -40,7 +40,7 @@ console.log("iniciando app") // #debug #mensaje
 
 ```lua
 {
-  "tuusuario/hashtags.nvim",
+  "RHAM91/hashtags-nvim",
   dependencies = { "ibhagwan/fzf-lua" },
   config = function()
     require("hashtags").setup()
@@ -57,7 +57,7 @@ console.log("iniciando app") // #debug #mensaje
 
 ```lua
 use {
-  "tuusuario/hashtags.nvim",
+  "RHAM91/hashtags-nvim",
   requires = { "ibhagwan/fzf-lua" },
   config = function()
     require("hashtags").setup()
