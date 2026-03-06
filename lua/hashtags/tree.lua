@@ -173,6 +173,10 @@ function M.close()
   _buf = nil
 end
 
+function M.is_open()
+  return _win ~= nil and vim.api.nvim_win_is_valid(_win)
+end
+
 function M.toggle()
   if _win and vim.api.nvim_win_is_valid(_win) then
     M.close()

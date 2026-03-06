@@ -22,6 +22,12 @@ M.config = {
   -- Highlight de tags en el buffer activo
   highlight = true,
   highlight_group = "HashTag",
+  -- Auto-refresh de la caché al guardar un archivo
+  -- Ponlo en false si tienes proyectos muy grandes y notas lentitud
+  auto_refresh = true,
+  -- Delay en ms antes de refrescar el árbol tras guardar
+  -- Aumenta este valor si sientes lag al guardar
+  auto_refresh_delay = 100,
 }
 
 function M.setup(opts)
@@ -40,6 +46,22 @@ function M.setup(opts)
     })
   end
 
+-- Auto-refresh al guardar
+  if M.config.auto_refresh then
+    vim.api.nvim_create_autocmd("BufWritePost", {
+      callback = function()
+        -- Limpia la caché inmediatamente
+        require("hashtags.scanner").clear_cache()
+        -- Refresca el árbol después del delay para no bloquear el guardado
+        vim.defer_fn(function()
+          if require("hashtags.tree").is_open() then
+            require("hashtags.tree").refresh()
+          end
+        end, M.config.auto_refresh_delay)
+      end,
+    })
+  end
+  
   -- Registrar comandos
   vim.api.nvim_create_user_command("HashtagsFind", function()
     require("hashtags.picker").open()
